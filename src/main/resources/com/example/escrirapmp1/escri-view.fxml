@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.shape.Arc?>
+
+<?import javafx.scene.shape.Circle?>
+<VBox alignment="CENTER" prefHeight="600.0" prefWidth="800.0" spacing="15"
+
+      xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.escrirapmp1.controller.GameController">
+
+    <children>
+
+        <!-- Barra superior -->
+        <BorderPane prefWidth="800" prefHeight="100">
+
+            <!-- Nivel izquierda -->
+            <left>
+                <Label fx:id="levelLabel" text="Nivel 1" style="-fx-font-size:25; -fx-font-weight:bold;">
+                    <BorderPane.margin>
+                        <Insets left="20" top="50"/>
+                    </BorderPane.margin>
+                </Label>
+            </left>
+
+            <!-- Racha centro -->
+            <center>
+                <Label fx:id="streakTopLabel" text="🔥 0" style="-fx-font-size:25; -fx-font-weight:bold;">
+                    <BorderPane.margin>
+                        <Insets top="50"/>
+                    </BorderPane.margin>
+                </Label>
+            </center>
+
+            <!-- Timer derecha -->
+            <right>
+            <StackPane fx:id="timerContainer"
+                    alignment="CENTER"
+                    prefHeight="70"
+                    prefWidth="70">
+
+                <!-- círculo base -->
+                <Circle radius="30" stroke="#E0E0E0" strokeWidth="6" fill="TRANSPARENT"/>
+
+                <!-- progreso -->
+                <Arc fx:id="timerArc"
+                    centerX="35" 
+                    centerY="35"
+                    radiusX="30"
+                    radiusY="30"
+                    startAngle="90"
+                    length="360"
+                    type="OPEN"
+                    stroke="#7B3FE4"
+                    strokeWidth="6"
+                    fill="TRANSPARENT"/>
+
+                <!-- número -->
+                <Label fx:id="timerLabel"
+                    text="20"
+                    style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+            </StackPane>
+        </right>
+
+        </BorderPane>
+
+
+        <!-- Gameplay Panel -->
+        <StackPane fx:id="gameplayPanel" prefHeight="400.0" prefWidth="600.0"
+                   style="-fx-background-color:white; -fx-background-radius:12; -fx-border-radius:12; -fx-padding:30;">
+
+            <VBox alignment="CENTER" spacing="25">
+
+                <!-- Palabra centrada grande-->
+                <Label fx:id="wordLabel" text="Empecemos a jugar" textAlignment="CENTER">
+                    <font>
+                        <Font size="42.0" />
+                    </font>
+                </Label>
+
+                <!-- Feedback debajo de la palabra -->
+                <Label fx:id="feedbackLabel" text="" textAlignment="CENTER" style="-fx-font-size:16; -fx-text-fill:green;"/>
+
+                <!-- Input un poco abajo -->
+                <TextField fx:id="inputField" alignment="CENTER" promptText="Escribe la palabra aquí..."
+                           prefWidth="420" prefHeight="50"
+                           style="-fx-background-radius:10; -fx-border-radius:10; -fx-border-color:#7b5ce6; -fx-font-size:18;" >
+                    <font>
+                        <Font size="32.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets top="20"/>
+                    </VBox.margin>
+                </TextField>
+
+                <!-- Botón centrado en la parte inferior -->
+                <Button fx:id="validateButton" contentDisplay="CENTER" prefHeight="55.0" prefWidth="280.0"
+                        text="▶  Validar" textAlignment="CENTER"
+                        style="-fx-background-color:linear-gradient(#7b3fe4,#5a2ccf); -fx-text-fill:white; -fx-font-size:18; -fx-font-weight:bold; -fx-background-radius:20;">
+                    <font>
+                        <Font size="21.0" />
+                    </font>
+                    <VBox.margin>
+                        <Insets top="40"/>
+                    </VBox.margin>
+                </Button>
+            </VBox>
+        </StackPane>
+
+        <!-- Summary Panel (hidden during gameplay) -->
+        <StackPane fx:id="summaryPanel" visible="false">
+            <VBox alignment="CENTER" spacing="20">
+                <Label style="-fx-font-size: 26; -fx-font-weight: bold;" text="Juego Terminado!" />
+                <Label fx:id="finalLevelLabel" text="Final Level: " />
+                <Label fx:id="streakLabel" text="Total Streak: " />
+                <Label fx:id="remainingTimeLabel" text="Remaining Time: " />
+                <Button fx:id="restartButton" onAction="#restartGame" text="Restart Game" />
+            </VBox>
+        </StackPane>
+
+    </children>
+
+</VBox>
