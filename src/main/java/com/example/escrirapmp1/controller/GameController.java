@@ -12,7 +12,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 import com.example.escrirapmp1.model.GameModel;
 import com.example.escrirapmp1.model.GameStatus;
@@ -55,7 +55,7 @@ public class GameController implements GameEventHandler {
     private Label timerLabel;
 
 @FXML
-    private Arc timerArc;
+    private Circle timerCircle;
 
     @FXML
     private Label levelLabel;
@@ -100,6 +100,8 @@ public class GameController implements GameEventHandler {
         // Detener timer existente
         stopTimer();
         isValidating = false;
+        timeoutTriggered = false;
+        inputField.setDisable(false);
 
         // Verificar que el estado no sea FINISHED ni FAILED
         if (GameStatus.FINISHED.equals(gameModel.getGameStatus()) || GameStatus.FAILED.equals(gameModel.getGameStatus())) {
@@ -115,6 +117,12 @@ public class GameController implements GameEventHandler {
         // Inicializar tiempo para el nivel
         gameModel.initializeTimeForLevel();
         maxTimeForLevel = gameModel.getRemainingTime();
+        if (timerCircle != null) {
+            double circum = 2 * Math.PI * 27;
+            timerCircle.setRotate(-90);
+            timerCircle.getStrokeDashArray().setAll(circum);
+            timerCircle.setStrokeDashOffset(0);  // full visible
+        }
         updateTimerLabel();
 
         // Iniciar timer
@@ -141,6 +149,9 @@ public class GameController implements GameEventHandler {
         if (streakTopLabel != null) {
             streakTopLabel.setText("🔥 " + gameModel.getStreak());
         }
+        if (timerLabel != null) {
+            timerLabel.setStyle("-fx-font-size:18px; -fx-font-weight:bold; -fx-font-family: 'Courier New', monospace;");
+        }
     }
 
     /**
@@ -148,7 +159,7 @@ public class GameController implements GameEventHandler {
      */
     private void startTimer() {
         // Si ya existe un timeline, detenerlo primero
-        if (timeline != null) {
+        if (timeline != null && timeline.getStatus() == Timeline.Status.RUNNING) {
             timeline.stop();
         }
 
@@ -185,6 +196,8 @@ public class GameController implements GameEventHandler {
      * Reinicia el juego.
      */
     public void restartGame() {
+        timeoutTriggered = false;
+        inputField.setDisable(false);
         gameModel.resetGame();
         startNewLevel();
     }
@@ -197,16 +210,19 @@ public class GameController implements GameEventHandler {
         if (timerLabel != null) {
             timerLabel.setText(String.valueOf(remaining));
         }
-        if (timerArc != null && maxTimeForLevel > 0) {
+        if (timerCircle != null && maxTimeForLevel > 0) {
             double progress = (double) remaining / maxTimeForLevel;
-            timerArc.setLength(-progress * 360.0);
+            double circum = 2 * Math.PI * 27;
+            timerCircle.getStrokeDashArray().setAll(circum);
+            timerCircle.setStrokeDashOffset(circum * (1 - progress));
+
             double depletionRatio = 1.0 - progress;
 
             Color start = Color.web("#7b3fe4");
             Color end = Color.web("#e74c3c");
             Color color = start.interpolate(end, depletionRatio);
 
-            timerArc.setStroke(color);
+            timerCircle.setStroke(color);
         }
     }
 
@@ -219,6 +235,7 @@ public class GameController implements GameEventHandler {
             return;
         }
         isValidating = true;
+        inputField.setDisable(true);
         // Detener timer
         stopTimer();
         
@@ -226,6 +243,7 @@ public class GameController implements GameEventHandler {
         feedbackLabel.setText("");
 
         if (!GameStatus.PLAYING.equals(gameModel.getGameStatus())) {
+            inputField.setDisable(false);
             isValidating = false;
             return;
         }
@@ -334,6 +352,7 @@ public class GameController implements GameEventHandler {
 
     @Override
     public void onTimeUp() {
+        stopTimer();
         timeoutTriggered = true;
         validateInput();
     }

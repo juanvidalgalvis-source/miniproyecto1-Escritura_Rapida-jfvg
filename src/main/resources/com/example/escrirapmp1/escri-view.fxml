@@ -49,15 +49,12 @@
                 <!-- círculo base -->
                 <Circle radius="30" stroke="#E0E0E0" strokeWidth="6" fill="TRANSPARENT"/>
 
-                <!-- progreso -->
-                <Arc fx:id="timerArc"
-                    radiusX="30"
-                    radiusY="30"
-                    startAngle="90"
-                    length="360"
-                    type="ROUND"
+<!-- progreso -->
+                <Circle fx:id="timerCircle"
+                    radius="30"
                     stroke="#7B3FE4"
                     strokeWidth="6"
+                    strokeLineCap="ROUND"
                     fill="TRANSPARENT"/>
 
                 <!-- número -->
@@ -66,7 +63,7 @@
                     style="-fx-font-size:18px; -fx-font-weight:bold;"/>
 
             </StackPane>
-        </right>
+            </right>
 
         </BorderPane>
 
