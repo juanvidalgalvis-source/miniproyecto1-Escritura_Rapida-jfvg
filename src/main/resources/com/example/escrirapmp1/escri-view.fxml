@@ -51,13 +51,11 @@
 
                 <!-- progreso -->
                 <Arc fx:id="timerArc"
-                    centerX="35" 
-                    centerY="35"
                     radiusX="30"
                     radiusY="30"
                     startAngle="90"
                     length="360"
-                    type="OPEN"
+                    type="ROUND"
                     stroke="#7B3FE4"
                     strokeWidth="6"
                     fill="TRANSPARENT"/>
@@ -115,17 +113,6 @@
             </VBox>
         </StackPane>
 
-        <!-- Summary Panel (hidden during gameplay) -->
-        <StackPane fx:id="summaryPanel" visible="false">
-            <VBox alignment="CENTER" spacing="20">
-                <Label style="-fx-font-size: 26; -fx-font-weight: bold;" text="Juego Terminado!" />
-                <Label fx:id="finalLevelLabel" text="Final Level: " />
-                <Label fx:id="streakLabel" text="Total Streak: " />
-                <Label fx:id="remainingTimeLabel" text="Remaining Time: " />
-                <Button fx:id="restartButton" onAction="#restartGame" text="Restart Game" />
-            </VBox>
-        </StackPane>
-
     </children>
-
 </VBox>
+

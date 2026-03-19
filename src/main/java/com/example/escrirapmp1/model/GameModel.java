@@ -16,6 +16,7 @@ public class GameModel {
     private int remainingTime;
     private String gameStatus;
     private int streak;
+    private int maxStreak;
 
     /**
      * Constructor básico con valores iniciales.
@@ -26,6 +27,7 @@ public class GameModel {
         this.remainingTime = 0;
         this.gameStatus = GameStatus.READY;
         this.streak = 0;
+        this.maxStreak = 0;
     }
 
     /**
@@ -88,6 +90,7 @@ public class GameModel {
     public void resetGame() {
         this.currentLevel = 1;
         this.streak = 0;
+        this.maxStreak = 0;
         this.remainingTime = 0;
         this.gameStatus = GameStatus.READY;
     }
@@ -117,6 +120,9 @@ public class GameModel {
      */
     public void incrementStreak() {
         streak++;
+        if (streak > maxStreak) {
+            maxStreak = streak;
+        }
     }
 
     /**
@@ -133,5 +139,13 @@ public class GameModel {
     public int getStreak() {
         return streak;
     }
+
+    /**
+     * Returns the maximum streak achieved.
+     */
+    public int getMaxStreak() {
+        return maxStreak;
+    }
+
 
 }

@@ -2,10 +2,10 @@ package com.example.escrirapmp1.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import com.example.escrirapmp1.Main;
+import com.example.escrirapmp1.vista.GameStage;
 
 /**
- * StartController - Minimal controller for the start menu.
+ * StartController - Controlador mínimo para iniciar el menú.
  */
 public class StartController {
 
@@ -14,10 +14,10 @@ public class StartController {
 
     /**
      * Handle Start Game button click.
-     * Switches to the game scene.
+     * Switches to the game scene via GameStage.
      */
     @FXML
     private void startGame() {
-        Main.switchScene("escri-view.fxml");
+        GameStage.getInstance().switchToGameScene();
     }
 }

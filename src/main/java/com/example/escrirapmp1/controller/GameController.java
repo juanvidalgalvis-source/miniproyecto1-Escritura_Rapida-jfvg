@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import com.example.escrirapmp1.model.GameModel;
 import com.example.escrirapmp1.model.GameStatus;
 import com.example.escrirapmp1.model.WordProvider;
+import com.example.escrirapmp1.vista.GameStage;
 
 /**
  * GameController - Controlador principal del juego.
@@ -35,6 +36,7 @@ public class GameController implements GameEventHandler {
 
     // Bandera para indicar si el tiempo se agotó
     private boolean timeoutTriggered = false;
+    private boolean isValidating = false;
 
     // Referencias a elementos de la vista (FXML)
     @FXML
@@ -49,32 +51,21 @@ public class GameController implements GameEventHandler {
     @FXML
     private Button validateButton;
 
-@FXML
+    @FXML
     private Label timerLabel;
 
-    @FXML
+@FXML
     private Arc timerArc;
+
+    @FXML
+    private Label levelLabel;
+    
+    @FXML 
+    private Label streakTopLabel;
     
     private int maxTimeForLevel = 0;
     
-    // Summary panel elements
-    @FXML
-    private StackPane gameplayPanel;
-    
-    @FXML
-    private StackPane summaryPanel;
-    
-    @FXML
-    private Label finalLevelLabel;
-    
-    @FXML
-    private Label streakLabel;
-    
-    @FXML
-    private Label remainingTimeLabel;
-    
-    @FXML
-    private Button restartButton;
+    // Summary panel elements (legacy, not used)
 
     /**
      * Constructor por defecto para FXMLLoader.
@@ -108,9 +99,10 @@ public class GameController implements GameEventHandler {
     public void startNewLevel() {
         // Detener timer existente
         stopTimer();
+        isValidating = false;
 
-        // Verificar que el estado no sea FINISHED
-        if (GameStatus.FINISHED.equals(gameModel.getGameStatus())) {
+        // Verificar que el estado no sea FINISHED ni FAILED
+        if (GameStatus.FINISHED.equals(gameModel.getGameStatus()) || GameStatus.FAILED.equals(gameModel.getGameStatus())) {
             return;
         }
 
@@ -139,8 +131,16 @@ public class GameController implements GameEventHandler {
             wordLabel.setText(gameModel.getCurrentWord());
         }
         
-        // Mostrar panel de juego
-        showGameplay();
+        updateTopBar();
+    }
+
+    private void updateTopBar() {
+        if (levelLabel != null) {
+            levelLabel.setText("Nivel " + gameModel.getCurrentLevel());
+        }
+        if (streakTopLabel != null) {
+            streakTopLabel.setText("🔥 " + gameModel.getStreak());
+        }
     }
 
     /**
@@ -199,7 +199,7 @@ public class GameController implements GameEventHandler {
         }
         if (timerArc != null && maxTimeForLevel > 0) {
             double progress = (double) remaining / maxTimeForLevel;
-            timerArc.setLength(progress * 360.0);
+            timerArc.setLength(-progress * 360.0);
             double depletionRatio = 1.0 - progress;
 
             Color start = Color.web("#7b3fe4");
@@ -215,37 +215,32 @@ public class GameController implements GameEventHandler {
      * Valida la entrada del usuario contra la palabra actual.
      */
     private void validateInput() {
+        if (isValidating) {
+            return;
+        }
+        isValidating = true;
         // Detener timer
         stopTimer();
         
         // Limpiar mensaje de feedback del nivel anterior
         feedbackLabel.setText("");
 
-        // Verificar que el estado sea PLAYING
         if (!GameStatus.PLAYING.equals(gameModel.getGameStatus())) {
+            isValidating = false;
             return;
         }
 
-        // Obtener texto del input
-        if (inputField == null) {
-            return;
-        }
-        String userInput = inputField.getText();
-        if (userInput == null) {
-            return;
-        }
-        userInput = userInput.trim();
+        String userInput = inputField.getText().trim();
         String targetWord = gameModel.getCurrentWord();
 
-        // Comparar palabras
         if (targetWord != null && userInput.equals(targetWord)) {
-            // Correcto: incrementar nivel y racha
+            // Correcto
             gameModel.incrementLevel();
             gameModel.incrementStreak();
             
-            // Verificar si el juego termino
             if (gameModel.isGameFinished()) {
-                showGameSummary();
+                gameModel.setGameStatus(GameStatus.FINISHED);
+                showGameSummary(gameModel.getCurrentLevel(), gameModel.getMaxStreak(), gameModel.getRemainingTime());
                 return;
             }
             
@@ -253,73 +248,43 @@ public class GameController implements GameEventHandler {
             feedbackLabel.setStyle("-fx-text-fill: green;");
             startNewLevel();
         } else {
-            // Incorrecto: cambiar estado a FAILED y resetear racha
-            gameModel.setGameStatus(GameStatus.FAILED);
             gameModel.resetStreak();
             
-            // Mostrar mensaje segun si fue por timeout o no
             if (timeoutTriggered) {
-                feedbackLabel.setText("¡¡¡Tiempo!!!");
+                // Timeout: game over
+                gameModel.setGameStatus(GameStatus.FAILED);
+                String message = "¡Tiempo agotado!";
+                feedbackLabel.setText(message);
+                feedbackLabel.setStyle("-fx-text-fill: red;");
+                
+                int lastCompletedLevel = Math.max(1, gameModel.getCurrentLevel() - 1);
+                showGameSummary(lastCompletedLevel, gameModel.getMaxStreak(), 0);
             } else {
-                feedbackLabel.setText("Incorrecto!!. Era: " + targetWord);
+                // Error escritura: retry mismo nivel
+                String message = "¡Incorrecto! Era: " + targetWord;
+                feedbackLabel.setText(message);
+                feedbackLabel.setStyle("-fx-text-fill: red;");
+                startNewLevel(); // Mantiene level actual
             }
-            feedbackLabel.setStyle("-fx-text-fill: red;");
-            
-            // Mostrar resumen del juego después de un delay (para que se vea el mensaje)
-            Timeline delayTimeline = new Timeline(new KeyFrame(Duration.seconds(1.5), event -> {
-                showGameSummary();
-            }));
-            delayTimeline.setCycleCount(1);
-            delayTimeline.play();
         }
-
-        // Resetear bandera de timeout
-        timeoutTriggered = false;
+        isValidating = false;
     }
     
     /**
      * Muestra el resumen final del juego cuando se completa.
      */
-    private void showGameSummary() {
-        // Detener el temporizador
+    private void showGameSummary(int finalLevel, int maxStreak, int timeLeft) {
         stopTimer();
-        
-        // Obtener informacion del juego
-        int finalLevel = gameModel.getCurrentLevel();
-        int totalStreak = gameModel.getStreak();
-        int timeLeft = gameModel.getRemainingTime();
-        
-        // Actualizar labels del panel de resumen
-        if (finalLevelLabel != null) {
-            finalLevelLabel.setText("Nivel Alcanzado: " + finalLevel);
-        }
-        if (streakLabel != null) {
-            streakLabel.setText("Puntaje Total: " + totalStreak);
-        }
-        if (remainingTimeLabel != null) {
-            remainingTimeLabel.setText("Tiempo Restante: " + timeLeft + " seconds");
-        }
-        
-        // Ocultar panel de juego y mostrar panel de resumen
-        if (gameplayPanel != null) {
-            gameplayPanel.setVisible(false);
-        }
-        if (summaryPanel != null) {
-            summaryPanel.setVisible(true);
-        }
+        isValidating = false;
+        GameStage.getInstance().showSummaryScene(finalLevel, maxStreak, timeLeft);
     }
     
     /**
      * Muestra el panel de juego (oculta el resumen).
      */
+    // Legacy showGameplay (panels removed)
     private void showGameplay() {
-        // Ocultar panel de resumen y mostrar panel de juego
-        if (summaryPanel != null) {
-            summaryPanel.setVisible(false);
-        }
-        if (gameplayPanel != null) {
-            gameplayPanel.setVisible(true);
-        }
+        // No longer needed with separate scenes
     }
 
     // ========== CLASES ADAPTADORAS ==========
