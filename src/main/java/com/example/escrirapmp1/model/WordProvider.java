@@ -9,18 +9,35 @@ import java.util.Random;
  */
 public class WordProvider {
 
-private String[] basicWords = { // Nivel 1-10: cortas
-            "casa", "perro", "gato", "sol", "luna", "agua", "fuego", "tierra", "aire", "libro",
-            "mesa", "silla", "puerta", "ventana", "árbol"
+        /** Palabras nivel 1-10: cortas y simples. */
+        private String[] basicWords = {
+                "casa", "perro", "gato", "sol", "luna", "agua", "fuego", "tierra", "aire", "libro", "mesa", "silla",
+                "puerta", "ventana", "árbol", "pan", "flor", "nube", "cielo", "mar", "pez", "sal", "luz", "día", "noche"
         };
-        private String[] mediumWords = { // Nivel 11-20: medias
-            "familia", "amigo", "escuela", "computadora", "televisión", "teléfono", "internet", "elefante", "jirafa", "león"
+        /** Palabras nivel 11-20: longitud media. */
+        private String[] mediumWords = {
+                "familia", "amigo", "escuela", "computadora", "televisión", "teléfono", "internet", "elefante", "jirafa", "león",
+                "montaña", "ciudad", "programa", "teclado", "pantalla", "canción", "película", "ventilador", "reloj", "cuaderno"
         };
-        private String[] hardWords = { // Nivel 21-30: acentos/mayúsculas
-            "inteligencia", "filosofía", "psicología", "matemáticas", "biología", "física cuántica", "relatividad", "algoritmo", "PROGRAMACIÓN", "JavaFX"
+        /** Palabras nivel 21-30: acentos, mayúsculas, complejidad. */
+        private String[] hardWords = {
+                "inteligencia", "filosofía", "psicología", "matemáticas", "biología",
+                "física cuántica", "relatividad", "algoritmo",
+                "PROGRAMACIÓN", "JavaFX", "OpenAI",
+                "compilador", "abstracción", "encapsulación", "herencia", "polimorfismo",
+                "@", "#", "&", "*", "Code123", "Nivel1", "Test2026"
         };
-        private String[] expertWords = { // Nivel 31-45: largas/frases
-            "desarrollo", "aplicaciones", "interfaz gráfica", "Java Platform", "modular runtime", "escritura rápida", "velocidad tipografía", "juego educativo"
+        /** Palabras nivel 31-45: largas y técnicas. */
+        private String[] expertWords = {
+                "desarrollo", "aplicaciones", "interfaz gráfica", "Java Platform",
+                "modular runtime", "escritura rápida", "velocidad tipografía",
+                "PROGRAMACIÓN AVANZADA",
+                "JavaFX Engine",
+                "OpenAI Model",
+                "programación concurrente", "sistemas distribuidos",
+                "arquitectura de software", "modelo vista controlador",
+                "@#%", "#$%&", "&*@",
+                "Java@2026", "Code&Play", "FX_Engine", "Nivel#Final"
         };
 
     private Random random;

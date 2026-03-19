@@ -1,21 +1,34 @@
 package com.example.escrirapmp1.model;
 
 /**
- * GameModel - Clase modelo responsable del estado del juego.
+ * GameModel - Manages the state of the typing game.
+ * Handles level progression, timer, streak, and game status.
+ * 
+ * @author Vidali
+ * @version 1.0
  */
 public class GameModel {
 
-    // Constantes para el temporizador
+    // Constantes del temporizador - No se modifican externamente
+    /** Base time for level 1 in seconds. */
     private static final int BASE_TIME = 20;
+    /** Minimum time per level in seconds. */
     private static final int MIN_TIME = 2;
+    /** Maximum achievable level. */
     private static final int MAX_LEVEL = 45;
 
-    // Atributos del modelo
+    // Atributos del estado del juego
+    /** Current game level (starts at 1). */
     private int currentLevel;
+    /** Current word to type. */
     private String currentWord;
+    /** Remaining time for current level in seconds. */
     private int remainingTime;
+    /** Current game status (READY, PLAYING, FAILED, FINISHED). */
     private String gameStatus;
+    /** Current consecutive correct answers streak. */
     private int streak;
+    /** Maximum streak achieved in the game. */
     private int maxStreak;
 
     /**
@@ -31,10 +44,11 @@ public class GameModel {
     }
 
     /**
-     * Inicializa el tiempo para el nivel actual.
-     * Fórmula: time = max(BASE_TIME - ((currentLevel - 1) / 5) * 2, MIN_TIME)
+     * Initializes the time limit for the current level.
+     * Formula: max(BASE_TIME - ((currentLevel - 1) / 5) * 2, MIN_TIME)
      */
     public void initializeTimeForLevel() {
+        // Fórmula de dificultad progresiva cada 5 niveles
         int time = Math.max(BASE_TIME - ((currentLevel - 1) / 5) * 2, MIN_TIME);
         this.remainingTime = time;
     }

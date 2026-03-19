@@ -20,8 +20,12 @@ import com.example.escrirapmp1.model.WordProvider;
 import com.example.escrirapmp1.vista.GameStage;
 
 /**
- * GameController - Controlador principal del juego.
- * Coordina las interacciones entre Model y View.
+ * GameController - Main controller for the typing game.
+ * Coordinates interactions between GameModel and the view using MVC pattern.
+ * Manages timer, input validation, level progression, and scene navigation.
+ * 
+ * @author Vidali
+ * @version 1.0
  */
 public class GameController implements GameEventHandler {
 
